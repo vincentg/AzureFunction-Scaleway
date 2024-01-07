@@ -1,9 +1,7 @@
-using System.Net;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
-using Azure.Core;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
@@ -31,7 +29,7 @@ namespace vgerard.scaleway.management
         }
 
         [Function("Action")]
-        public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Function, "get", 
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", 
                Route="{action:maxlength(32)}/{zone:regex(^[A-Z]{{2}}-[A-Z]{{3}}-\\d{{1}}$)}/{server_id:guid}")] 
                HttpRequestData req, string action, string zone, string server_id, CancellationToken token)
         {
@@ -48,7 +46,7 @@ namespace vgerard.scaleway.management
             if (allowed) {
                  _logger.LogInformation($"Executing action: {action}");
                 // Server can be stopped, first do ACPI poweroff
-                using StringContent jsonContent = new(JsonSerializer.Serialize(new
+                 using StringContent jsonContent = new(JsonSerializer.Serialize(new
                 {
                     action = action
                 }),
@@ -61,10 +59,7 @@ namespace vgerard.scaleway.management
                 _logger.LogInformation($"Action: {action} Executed succesfully");
             } 
 
-            var response = req.CreateResponse(HttpStatusCode.OK);
-            response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
-            response.WriteString("Success!");
-            return response;
+            return new OkObjectResult("Success!");
         }
     }
 }
