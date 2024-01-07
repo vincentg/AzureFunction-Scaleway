@@ -37,7 +37,7 @@ namespace vgerard.scaleway.management
         {
             _logger.LogInformation($"Executing {action} HTTP trigger for zone: {zone}, serverID: {server_id}");
             // Check if action is allowed
-            using HttpResponseMessage possibleActions = await sharedClient.GetAsync($"/instance/v1/zones/{zone}/servers/{server_id}/action",token);
+            using HttpResponseMessage possibleActions = await sharedClient.GetAsync($"/instance/v1/zones/{zone}/servers/{server_id}/action", token);
             possibleActions.EnsureSuccessStatusCode();
 
             var actionsResponse = await possibleActions.Content.ReadFromJsonAsync<ActionResponse>(token);
