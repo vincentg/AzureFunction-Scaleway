@@ -17,17 +17,17 @@ namespace vgerard.scaleway.management
     public class VMAction
     {
         private readonly ILogger _logger;
-        private readonly string _apikey;
         private static HttpClient sharedClient = new()
         {
-            BaseAddress = new Uri("https://api.scaleway.com")
+            BaseAddress = new Uri("https://api.scaleway.com"),
+            DefaultRequestHeaders = {
+                {"X-Auth-Token", Environment.GetEnvironmentVariable("SCW_API_KEY") ?? ""}
+            }
         };
 
         public VMAction(ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<VMAction>();
-            _apikey = System.Environment.GetEnvironmentVariable("SCW_API_KEY") ?? "";
-            sharedClient.DefaultRequestHeaders.Add("X-Auth-Token", _apikey);
         }
 
         [Function("Action")]
